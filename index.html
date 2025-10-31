@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop de Pro-Duction</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #000;
+      overflow-x: hidden;
+    }
+
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 1rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 4rem;
+    }
+
+    .header-box {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ef4444;
+      text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .product-card {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 2px solid rgba(71, 85, 105, 0.5);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+    }
+
+    .product-card:hover {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    .product-name-box {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-name {
+      color: #ef4444;
+      font-weight: bold;
+      font-size: 1.125rem;
+      letter-spacing: 0.05em;
+    }
+
+    .product-subtitle {
+      color: #9ca3af;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      text-transform: none;
+    }
+
+    .product-image-container {
+      background: rgba(15, 23, 42, 0.5);
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      height: 12rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .product-footer {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .points-display {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ef4444;
+      font-weight: bold;
+      font-size: 1.125rem;
+    }
+
+    .points-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      object-fit: contain;
+    }
+
+    .buy-btn {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      color: white;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.875rem;
+    }
+
+    .buy-btn:hover {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.5);
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: linear-gradient(135deg, #000 0%, rgba(153, 27, 27, 0.3) 50%, #000 100%);
+      border: 2px solid rgba(239, 68, 68, 0.5);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 28rem;
+      width: 100%;
+      box-shadow: 0 20px 25px -5px rgba(153, 27, 27, 0.5);
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: white;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ef4444;
+      text-align: center;
+    }
+
+    .modal-subtitle {
+      color: #9ca3af;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    .modal-text {
+      color: #9ca3af;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .copy-btn {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%);
+      color: #f87171;
+      font-family: monospace;
+      font-size: 1.125rem;
+      padding: 1rem 1.5rem;
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 1rem 0;
+    }
+
+    .copy-btn:hover {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    .success-msg {
+      color: #4ade80;
+      text-align: center;
+      font-size: 0.875rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <video id="bg-video" autoplay loop muted playsinline>
+    <source src="./public/aniamted_backgorundred.mp4" type="video/mp4">
+  </video>
+
+  <div class="overlay"></div>
+
+  <div class="container">
+    <div class="header">
+      <div class="header-box">
+        <h1>Shop de Pro-Duction</h1>
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <button class="close-btn" id="closeBtn">&times;</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: 'Gagne ton Dofus Ivoire', subtitle: 'Ivoire', image: './public/boutiquelogo1.png', command: '!shop buy dofusivoire', points: 12500 },
+      { id: 2, name: 'Gagne ton Dofus ébène', subtitle: '9 à 12 Dommages', image: './public/boutiquelogo2.png', command: '!shop buy dofusebene', points: 9500 },
+      { id: 3, name: 'Gagne ton Dofus ébène', subtitle: '12 à 14 Dommages', image: './public/boutiquelogo3.png', command: '!shop buy dofusebene2', points: 14500 },
+      { id: 4, name: 'Gagne ton EXO PA', subtitle: 'Sous-Bois - Gladia - Cape ToT', image: './public/boutiquelogo4.png', command: '!shop buy itemspa', points: 7500 },
+      { id: 5, name: 'Gagne ton EXO PA', subtitle: "Qu'Tan - Ily (sauf ini) - Frima - Krala", image: './public/boutiquelogo5.png', command: '!shop buy itemspa2', points: 10000 },
+      { id: 6, name: 'Gagne ta panoplie EXO', subtitle: 'Sous-bois complète', image: './public/boutiquelogo6.png', command: '!shop buy pannocmpt', points: 17500 },
+      { id: 7, name: 'Gagne ta panoplie EXO', subtitle: 'Gladia complète', image: './public/boutiquelogo7.png', command: '!shop buy panogladia', points: 20000 },
+      { id: 8, name: 'Gagne ta panoplie EXO', subtitle: "Ily - Qu'Tan EXO PA/PM (sauf ini)", image: './public/boutiquelogo8.png', command: '!shop buy itemspanno', points: 30000 },
+      { id: 9, name: 'Gagne ton Annolamour', subtitle: 'JP over 14 ini', image: './public/boutiquelogo9.png', command: '!shop buy Lamourini', points: 15000 },
+      { id: 10, name: 'Gagne ton Dofus Vulbis', subtitle: 'LE Vulbis', image: './public/boutiquelogo10.png', command: '!shop buy dofusvulbis', points: 75000 },
+    ];
+
+    const productsGrid = document.getElementById('productsGrid');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const closeBtn = document.getElementById('closeBtn');
+    const modalContent = document.getElementById('modalContent');
+
+    function createProductCard(product) {
+      return `
+        <div class="product-card">
+          <div class="product-name-box">
+            <div class="product-name">${product.name}</div>
+          </div>
+          <p class="product-subtitle">${product.subtitle}</p>
+          <div class="product-image-container">
+            <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.parentElement.innerHTML='<div style=\'color: #9ca3af; text-align: center;\'>Image</div>'">
+          </div>
+          <div class="product-footer">
+            <div class="points-display">
+              <img src="./public/tune.png" alt="pièce" class="points-icon">
+              <span>${product.points.toLocaleString()} points</span>
+            </div>
+            <button class="buy-btn" onclick="openModal(${product.id})">Acheter</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function openModal(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      modalContent.innerHTML = `
+        <h2 class="modal-title">${product.name}</h2>
+        <p class="modal-subtitle">${product.subtitle}</p>
+        <p class="modal-text">Cliquez pour copier la commande :</p>
+        <button class="copy-btn" onclick="copyCommand('${product.command}')">
+          ${product.command}
+        </button>
+        <div id="successMsg"></div>
+      `;
+
+      modalOverlay.classList.add('active');
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+    }
+
+    function copyCommand(command) {
+      navigator.clipboard.writeText(command).then(() => {
+        const successMsg = document.getElementById('successMsg');
+        successMsg.innerHTML = '<p class="success-msg">Commande copiée dans le presse-papier!</p>';
+        setTimeout(() => {
+          successMsg.innerHTML = '';
+        }, 2000);
+      });
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    productsGrid.innerHTML = products.map(createProductCard).join('');
+  </script>
+</body>
+</html>
